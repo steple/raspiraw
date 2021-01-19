@@ -65,34 +65,69 @@ struct sensor_regs imx219_8MPix[] =
     {0x0128, 0x00},  // DPHY_CNTRL
     {0x012A, 0x18},  // EXCK_FREQ [15:8]
     {0x012B, 0x00},  // EXCK_FREQ [7:0]
+
+    // Frame Bank A register group, 0x0154 - 0x018D
+
     {0x0157, 0x00},  // Analog Gain
     {0x0158, 0x01},  // Digital Gain [15:8]
     {0x0159, 0x00},  // Digital Gain [7:0]
-    {0x015A, 0x01},  // Shutter/Integration Time [15:8]
-    {0x015B, 0x00},  // Shutter/Integration Time [7:0]
-    {0x0160, 0x09},  // Frame Length [15:8], Frame length is 0x9c8 = 2540
+    {0x015A, 0x01},  // Shutter/Coarse Integration Time [15:8]
+    {0x015B, 0x00},  // Shutter/Coarse Integration Time [7:0]
+    // Frame length unit is {1, 2} lines in binning modes {{0, 1, 2}, 3}
+    // Here it is 0x9c8 = 2540
+    {0x0160, 0x09},  // Frame Length [15:8]
     {0x0161, 0xC8},  // Frame Length [7:0]
-    {0x0162, 0x0D},  // Line Length [15:8], Line length is 0xd78 = 3448
+    // Line length in units of pixels
+    // Here it is 0xd78 = 3448
+    {0x0162, 0x0D},  // Line Length [15:8]
     {0x0163, 0x78},  // Line Length [7:0]
-    {0x0164, 0x00},  // Crop left offset [15:8] (here 0 for full frame).
-    {0x0165, 0x00},  // Crop left offset [7:0] 
-    {0x0166, 0x0C},  // Crop width-1 [15:8] (here full width - 1).
-    {0x0167, 0xCF},  // Crop width-1 [7:0]
-    {0x0168, 0x00},  // Crop top offset [15:8] (here 0 for full frame).
-    {0x0169, 0x00},  // Crop top offset [7:0]
-    {0x016A, 0x09},  // Crop height-1 [15:8] (here full height - 1).
-    {0x016B, 0x9F},  // Crop height-1 [7:0]
-    {0x016C, 0x0C},  // Image width [15:8] (here 0xcd0 = 3280 pixels).
+    // x addresss start: x addresss of the top left corner pixel
+    // Here it is 0
+    {0x0164, 0x00},  // x addresss start [11:8]
+    {0x0165, 0x00},  // x addresss start [7:0] 
+    // x address end: x addresss of the bottom right corner pixel
+    // Here it is 0xccf = 3279
+    {0x0166, 0x0C},  // x addresss end [11:8]
+    {0x0167, 0xCF},  // x addresss end [7:0] 
+    // y addresss start: y addresss of the top left corner pixel
+    // Here it is 0
+    {0x0168, 0x00},  // y addresss start [11:8]
+    {0x0169, 0x00},  // y addresss start [7:0] 
+    // y address end: y addresss of the bottom right corner pixel
+    // Here it is 099f = 2463
+    {0x016A, 0x09},  // y addresss end [11:8]
+    {0x016B, 0x9F},  // y addresss end [7:0]
+    // Image width (x-direction)
+    // Here it is 0xcd0 = 3280 pixels
+    {0x016C, 0x0C},  // Image width [11:8]
     {0x016D, 0xD0},  // Image width [7:0]
-    {0x016E, 0x09},  // Image height [15:8] (here 0x9a0 = 2464 pixels).
+    // Image height (y-direction)
+    // Here it is 0x9a0 = 2464 pixels
+    {0x016E, 0x09},  // Image height [11:8]
     {0x016F, 0xA0},  // Image height [7:0]
+    // X and Y increments for odd pixels
     {0x0170, 0x01},  // X_ODD_INC [2:0]
     {0x0171, 0x01},  // Y_ODD_INC [2:0]
-    {0x0172, 0x03},  // 
-    {0x0174, 0x00},  // Binning Mode H_A
-    {0x0175, 0x00},  // Binning Mode V_A
-    {0x018C, 0x0A},  // CSI Data Format [15:8]
-    {0x018D, 0x0A},  // CSI Data Format [7:0]
+    {0x0172, 0x03},  // Image orientation, bit 0: horizontal, bit 1: vertical
+    // Binning modes:
+    // 0: none, 1: x2, 2: x4, 3: x2 analog
+    {0x0174, 0x00},  // Binning Mode H_A (horizontal)
+    {0x0175, 0x00},  // Binning Mode V_A (vertical)
+    // Binning calculation modes:
+    // 0: average, 1: sum
+    {0x0176, 0x00},  // Binning Calculation Mode, horizontal
+    {0x0177, 0x00},  // Binning Calculation Mode, vertical
+    {0x0189, 0x00},  // Analog gain, short exposure
+    // Coarse integration time, short exposure
+    {0x018A, 0x01},  // Coarse Integration time [15:8]
+    {0x018B, 0xF4},  // Coarse Integration time [7:0]
+    {0x018C, 0x0A},  // CSI-2 Data Format [15:8]
+    {0x018D, 0x0A},  // CSI-2 Data Format [7:0]
+
+    // Frame Bank B register group, 0x0254 - 0x028D - not set here
+
+    // Clock setup registers 0x0300 - 0x0627
+
     {0x0301, 0x05},  // VTPXCK_DIV
     {0x0303, 0x01},  // VTSYCK_DIV
     {0x0304, 0x03},  // PREPLLCK_VT_DIV [3:0]
@@ -245,7 +280,6 @@ struct sensor_regs imx219_mode2[] =
       {0x4793, 0x10},
       {0x4797, 0x0e},
       {0x479b, 0x0e},
-
       {0x0172, 0x03},
       {0x0157, 0x00},
       {0x0160, 0x0d},
@@ -380,7 +414,6 @@ struct sensor_regs imx219_mode4[] =
       {0x4793, 0x10},
       {0x4797, 0x0e},
       {0x479b, 0x0e},
-
       {0x0172, 0x03},
       {0x0157, 0x00},
       {0x0160, 0x05},
@@ -525,69 +558,103 @@ struct sensor_regs imx219_mode6[] =
 struct sensor_regs imx219_mode7[] =
 {
     // 640x480 with 2x2 binning
-    {0x0100, 0x00},  //
-    {0x30eb, 0x05},  //
-    {0x30eb, 0x0c},  //
-    {0x300a, 0xff},  //
-    {0x300b, 0xff},  //
-    {0x30eb, 0x05},  //
-    {0x30eb, 0x09},  //
+    {0x0100, 0x00},  // 0=OFF, 1=Stream, 2=MAX
+    {0x30EB, 0x05},  //
+    {0x30EB, 0x0C},  //
+    {0x300A, 0xFF},  //
+    {0x300B, 0xFF},  //
+    {0x30EB, 0x05},  //
+    {0x30EB, 0x09},  //
     {0x0114, 0x01},  // CSI MIPI Lanes [1:0] (0x01=2, 0x03=4)
     {0x0128, 0x00},  // DPHY_CNTRL
-    {0x012a, 0x18},  // EXCK_FREQ [15:8]
-    {0x012b, 0x00},  // EXCK_FREQ [7:0]
+    {0x012A, 0x18},  // EXCK_FREQ [15:8]
+    {0x012B, 0x00},  // EXCK_FREQ [7:0]
+
+    // Frame Bank A register group, 0x0154 - 0x018D
+
     {0x0157, 0x00},  // Analog Gain
-                     // Digital Gain [15:8]
-                     // Digital Gain [7:0]
-    {0x015a, 0x00},  // Shutter/Integration Time [15:8]
-    {0x015b, 0x2f},  // Shutter/Integration Time [7:0]
-    {0x0160, 0x02},  // Frame Length [15:8], Frame length is 0x239 = 569 pixels
+    //{0x0158, 0x01},  // Digital Gain [15:8]
+    //{0x0159, 0x00},  // Digital Gain [7:0]
+    {0x015A, 0x00},  // Shutter/Coarse Integration Time [15:8]
+    {0x015B, 0x2f},  // Shutter/Coarse Integration Time [7:0]
+    // Frame length unit is {1, 2} lines in binning modes {{0, 1, 2}, 3}
+    // Here it is 0x239 = 569 (that's 1138 lines)
+    {0x0160, 0x02},  // Frame Length [15:8]
     {0x0161, 0x39},  // Frame Length [7:0]
-    {0x0162, 0x0d},  // Line Length [15:8], Line length is 0xde7 = 3559 pixels
+    // Line length in units of pixels
+    // Here it is 0xde7 = 3559
+    {0x0162, 0x0D},  // Line Length [15:8]
     {0x0163, 0xe7},  // Line Length [7:0]
-    {0x0164, 0x03},  // Crop left offset (here 0x3e8 = 1000).
-    {0x0165, 0xe8},  //
-    {0x0166, 0x08},  // Crop width-1 (here 0x8e7 = 2279 - that doesn't make sense - maybe because of the binning?).
-    {0x0167, 0xe7},  //
-    {0x0168, 0x02},  // Crop top offset (here 0x2f0 = 752).
-    {0x0169, 0xf0},  //
-    {0x016a, 0x06},  // Crop height-1 (here 0x6af = 1711 - that doesn't make sense - maybe because of the binning?).
-    {0x016b, 0xaf},  //
-    {0x016c, 0x02},  // Image width is 0x280 = 640 || x_output_size [11:8] and [7:0]
-    {0x016d, 0x80},  //
-    {0x016e, 0x01},  // Image height is 0x1e0 = 480 || y_output_size [11:8] and [7:0]
-    {0x016f, 0xe0},  //
+    // x addresss start: x addresss of the top left corner pixel
+    // Here it is 0x3e8 = 1000
+    {0x0164, 0x03},  // x addresss start [11:8]
+    {0x0165, 0xe8},  // x addresss start [7:0] 
+    // x address end: x addresss of the bottom right corner pixel
+    // Here it is 0x8e7 = 2279 = 1000 (x start) + 640 (width) * 2 (for binning) - 1
+    {0x0166, 0x08},  // x addresss end [11:8]
+    {0x0167, 0xe7},  // x addresss end [7:0] 
+    // y addresss start: y addresss of the top left corner pixel
+    // Here it is 0x2f0 = 752
+    {0x0168, 0x02},  // y addresss start [11:8]
+    {0x0169, 0xf0},  // y addresss start [7:0] 
+    // y address end: y addresss of the bottom right corner pixel
+    // Here it is 0x6af = 1711 = 752 (y start) + 480 (height) * 2 (for binning) - 1
+    {0x016A, 0x06},  // y addresss end [11:8]
+    {0x016B, 0xaF},  // y addresss end [7:0]
+    // Image width (x-direction)
+    // Here it is 0x280 = 640
+    {0x016C, 0x02},  // Image width [11:8]
+    {0x016D, 0x80},  // Image width [7:0]
+    // Image height (y-direction)
+    // Here it is 0x1e0 = 480
+    {0x016E, 0x01},  // Image height [11:8]
+    {0x016F, 0xe0},  // Image height [7:0]
+    // X and Y increments for odd pixels
     {0x0170, 0x01},  // X_ODD_INC [2:0]
     {0x0171, 0x01},  // Y_ODD_INC [2:0]
-    {0x0172, 0x03},  //
-    {0x0174, 0x03},  // Binning Mode H_A
-    {0x0175, 0x03},  // Binning Mode V_A
-    {0x018c, 0x0a},  // CSI Data Format [15:8]
-    {0x018d, 0x0a},  // CSI Data Format [7:0]
+    {0x0172, 0x03},  // Image orientation, bit 0: horizontal, bit 1: vertical
+    // Binning modes:
+    // 0: none, 1: 2x2, 2: 4x4, 3: 2x2 analog
+    {0x0174, 0x03},  // Binning Mode H_A (horizontal)
+    {0x0175, 0x03},  // Binning Mode V_A (vertical)
+    // Binning calculation modes:
+    // 0: average, 1: sum
+    {0x0176, 0x00},  // Binning Calculation Mode, horizontal
+    {0x0177, 0x00},  // Binning Calculation Mode, vertical
+    {0x0189, 0x00},  // Analog gain, short exposure
+    // Coarse integration time, short exposure
+    {0x018A, 0x01},  // Coarse Integration time [15:8]
+    {0x018B, 0xF4},  // Coarse Integration time [7:0]
+    {0x018C, 0x0A},  // CSI-2 Data Format [15:8]
+    {0x018D, 0x0A},  // CSI-2 Data Format [7:0]
+
+    // Frame Bank B register group, 0x0254 - 0x028D - not set here
+
+    // Clock setup registers 0x0300 - 0x0627
+
     {0x0301, 0x05},  // VTPXCK_DIV
     {0x0303, 0x01},  // VTSYCK_DIV
     {0x0304, 0x03},  // PREPLLCK_VT_DIV [3:0]
     {0x0305, 0x03},  // PREPLLCK_OP_DIV [3:0]
     {0x0306, 0x00},  // PLL_VT_MPY [10:8]
     {0x0307, 0x39},  // PLL_VT_MPY [7:0]
-    {0x0309, 0x0a},  // OPPXCK_DIV [4:0]
-    {0x030b, 0x01},  // OPSYCK_DIV
-    {0x030c, 0x00},  // PLL_OP_MPY [10:8]
-    {0x030d, 0x72},  // PLL_OP_MPY [7:0]
-    {0x4540, 0x00},  //
-    {0x455e, 0x00},  //
-    {0x4713, 0x30},  //
-    {0x471e, 0x4b},  //
-    {0x4750, 0x14},  //
-    {0x4767, 0x0f},  //
-    {0x478b, 0x10},  //
-    {0x478f, 0x10},  //
-    {0x4793, 0x10},  //
-    {0x4797, 0x0e},  //
-    {0x479b, 0x0e},  //
-    {0x47b4, 0x14},  //
-    {0x0100, 0x01},  //
-};
+    {0x0309, 0x0A},  // OPPXCK_DIV [4:0]
+    {0x030B, 0x01},  // OPSYCK_DIV
+    {0x030C, 0x00},  // PLL_OP_MPY [10:8]
+    {0x030D, 0x72},  // PLL_OP_MPY [7:0]
+    {0x4540, 0x00},
+    {0x455E, 0x00},
+    {0x4713, 0x30},
+    {0x471E, 0x4B},
+    {0x4750, 0x14},
+    {0x4767, 0x0F},
+    {0x478B, 0x10},
+    {0x478F, 0x10},
+    {0x4797, 0x0E},
+    {0x479B, 0x0E},
+    {0x47B4, 0x14},
+    {0x0100, 0x01}};
+
 
 struct mode_def imx219_modes[] = {
    {
