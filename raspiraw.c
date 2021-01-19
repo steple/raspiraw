@@ -566,6 +566,9 @@ static void buffers_to_rawcam(RASPIRAW_CALLBACK_T *dev)
 
 static void callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
+  if ((buffer->user_data == NULL)|| (buffer->length == 0)) {
+    return;
+  }
 	static int count = 0;
 	RASPIRAW_CALLBACK_T *dev = (RASPIRAW_CALLBACK_T*)port->userdata;
 	RASPIRAW_PARAMS_T *cfg = (RASPIRAW_PARAMS_T *)dev->cfg;
