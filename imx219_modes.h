@@ -796,6 +796,27 @@ struct sensor_regs imx219_stop[] = {
 static int imx219_set_crop(const struct sensor_def * const sensor,
                            struct mode_def * const sensor_mode,
                            const struct raspiraw_crop * const cfg) {
+  // All members of cfg default to -1 if the user did not set them.
+  // Check for validity.
+  if ((cfg->height == 0) || (cfg->width == 0))
+  {
+    // 0 is not a valid value for either.
+    return -1;
+  }
+  if ((cfg->height > 2464) || (cfg->width > 3820))
+  {
+    // These the maximum values, can't exceed them.
+    return -1;
+  }
+  if ((cfg->left >= 0) && (cfg->left + cfg->width > 3280)) {
+    // Falling off the right side of the sensor.
+    return -1;
+  }
+  if ((cfg->top >= 0) && (cfg->top + cfg->height > 3280)) {
+    // Falling off the right side of the sensor.
+    return -1;
+  }
+
   if (cfg->hinc >= 0) {
     modReg(sensor_mode, 0x0170, 0, 2, cfg->hinc, EQUAL);
   }
@@ -816,17 +837,37 @@ static int imx219_set_crop(const struct sensor_def * const sensor,
     modReg(sensor_mode, 0x016F, 0, 7, cfg->height & 0xFF, EQUAL);
   }
 
-  // if (cfg->left > 0) {
-  //   int val = cfg->left * sensor_mode->binning;
-  //   modReg(sensor_mode, 0x0164, 0, 3, val >> 8, EQUAL);
-  //   modReg(sensor_mode, 0x0165, 0, 7, val & 0xFF, EQUAL);
-  // }
-
-  // if (cfg->top > 0) {
-  //   int val = cfg->top * sensor_mode->binning;
-  //   modReg(sensor_mode, 0x0168, 0, 3, val >> 8, EQUAL);
-  //   modReg(sensor_mode, 0x0169, 0, 7, val & 0xFF, EQUAL);
-  // }
+  // Set the start and end pixels in both dimensions.  If the user
+  // did not provide left or top offset, then assume that we should
+  // center the image.
+  {
+    int x_start = 0;
+    if (cfg->left >= 0)
+    {
+      x_start = cfg->left;
+    } else {
+      x_start = (3280 - sensor_mode->width)/2;
+    }
+    modReg(sensor_mode, 0x0164, 0, 3, x_start >> 8, EQUAL);
+    modReg(sensor_mode, 0x0165, 0, 7, x_start &0xFF, EQUAL);
+    const int x_end = x_start + sensor_mode->width - 1;
+    modReg(sensor_mode, 0x0166, 0, 3, x_end >> 8, EQUAL);
+    modReg(sensor_mode, 0x0167, 0, 7, x_end &0xFF, EQUAL);
+  }
+  {
+    int y_start = 0;
+    if (cfg->top >= 0)
+    {
+      y_start = cfg->top;
+    } else {
+      y_start = (2464 - sensor_mode->height)/2;
+    }
+    modReg(sensor_mode, 0x0168, 0, 3, y_start >> 8, EQUAL);
+    modReg(sensor_mode, 0x0169, 0, 7, y_start &0xFF, EQUAL);
+    const int y_end = y_start + sensor_mode->height - 1;
+    modReg(sensor_mode, 0x016A, 0, 3, y_end >> 8, EQUAL);
+    modReg(sensor_mode, 0x016B, 0, 7, y_end &0xFF, EQUAL);
+  }
 
   return 0;
 }
