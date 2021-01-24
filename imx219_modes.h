@@ -570,7 +570,8 @@ struct sensor_regs imx219_mode7[] =
     {0x0162, 0x0D},  // Line Length [15:8]
     {0x0163, 0xe7},  // Line Length [7:0]
     // x addresss start: x addresss of the top left corner pixel
-    // Here it is 0x3e8 = 1000
+    // Here it is 0x3e8 = 1000 = (3280 - 640 * 2)/2
+    // The value is chosen so that the image is centered on the sensor.
     {0x0164, 0x03},  // x addresss start [11:8]
     {0x0165, 0xe8},  // x addresss start [7:0] 
     // x address end: x addresss of the bottom right corner pixel
