@@ -1572,7 +1572,7 @@ int main(int argc, char** argv) {
 			vcos_log_error("This sensor does not currently support manual cropping settings. Aborting");
 			return -1;
 		}
-	}
+  }
 
 	if (cfg.fps > 0)
 	{

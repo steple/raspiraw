@@ -33,22 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // REQUESTS FOR SUPPORT ABOUT THESE REGISTER VALUES WILL
 // BE IGNORED BY PI TOWERS.
 
-
-  // /* Handle crop */
-  // ret = reg_write(client, 0x0164, priv->crop_rect.left >> 8);
-  // ret |= reg_write(client, 0x0165, priv->crop_rect.left & 0xff);
-  // ret |= reg_write(client, 0x0166, (priv->crop_rect.width - 1) >> 8);
-  // ret |= reg_write(client, 0x0167, (priv->crop_rect.width - 1) & 0xff);
-  // ret |= reg_write(client, 0x0168, priv->crop_rect.top >> 8);
-  // ret |= reg_write(client, 0x0169, priv->crop_rect.top & 0xff);
-  // ret |= reg_write(client, 0x016A, (priv->crop_rect.height - 1) >> 8);
-  // ret |= reg_write(client, 0x016B, (priv->crop_rect.height - 1) & 0xff);
-  // ret |= reg_write(client, 0x016C, priv->crop_rect.width >> 8);
-  // ret |= reg_write(client, 0x016D, priv->crop_rect.width & 0xff);
-  // ret |= reg_write(client, 0x016E, priv->crop_rect.height >> 8);
-  // ret |= reg_write(client, 0x016F, priv->crop_rect.height & 0xff);
-
-
 #ifndef IMX219MODES_H_
 #define IMX219MODES_H_
 struct sensor_regs imx219_8MPix[] =
